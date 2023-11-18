@@ -1,0 +1,6 @@
+int a, b;
+int c;
+int d, e;
+int x;
+x = 9;
+x = a + b * c - d / e;
