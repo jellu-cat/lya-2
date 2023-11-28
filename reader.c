@@ -14,7 +14,7 @@ Variable *variableList, *variableListEnd;
 // Guarda en una lista dinámica todas las variables declaradas
 // en una misma línea
 void saveVars(char* type, char *token){
-    char* firstName;
+    char *firstName;
     char *delimiter = " ,;";
     // hace la verificación incluida de que no se trate de un salto
     // de línea
@@ -90,10 +90,17 @@ TreeExp* createLeftChild(SubExp *tmp){
             if(isNumber(name) != 0){
                 return NULL;
             }
-        } else type = var->type;
+        } else{
+            printf("%s es %i\n", var->name, var->type);
+            // sólo maneja operaciones con enteros
+            if(var->type == 1){
+                type = var->type;
+            } else {
+                printf("--> no es int\n");
+            }
+        }
     }
-    else {
-    }
+
     TreeExp *left;
     if (tmp->left->link != NULL) {
         left = tmp->left->link;
@@ -116,7 +123,15 @@ TreeExp* createRightChild(SubExp *tmp){
             if(isNumber(name) != 0){
                 return NULL;
             }
-        } else type = var->type;
+        } else{
+            printf("%s es %i\n", var->name, var->type);
+            // sólo maneja operaciones con enteros
+            if(var->type == 1){
+                type = var->type;
+            } else {
+                printf("--> no es int\n");
+            }
+        }
     }
 
     TreeExp *right;
@@ -143,7 +158,7 @@ TreeExp* createExpTree(SubExp** ref){
                 TreeExp* subroot = NULL;
                 treeInit(subroot);
 
-                TreeExp* left = createLeftChild(tmp);
+                TreeExp *left = createLeftChild(tmp);
                 TreeExp *right = createRightChild(tmp);
                 subroot = treeRootFill(treeNew(), tmp->symbol,
                                        &right, &left);
@@ -174,13 +189,14 @@ void operationLine(char* line){
     list = saveSubExp(strdup(copy));
     // dlistPrint(list);
     TreeExp* root = createExpTree(&list);
-    treeInOrder(root, 0);
+    treePreOrder(root, 0);
     printf("\n");
     if(strcmp(root->symbol, "=") == 0){
         if(handleAssign(root) == 0){
             char* name = root->left->symbol;
-            printf("asignar 0 a %s\n", name);
-            variableAssign(variableList, name, "0");
+            char* value = root->right->symbol;
+            printf("asignar %s a %s\n", value, name);
+            variableAssign(variableList, name, value);
         }
     }
 
